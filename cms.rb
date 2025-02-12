@@ -30,10 +30,16 @@ def load_file_content(file_path)
   end
 end
 
+helpers do
+  def h(text)
+    Rack::Utils.escape_html(text)
+  end
+end
+
 get "/" do
   @files = Dir.glob(File.join(DATA_PATH, "*")).map do |path|
     File.basename(path)
-  end # returns an Array of string File paths => ["about.txt", "changes.txt", "history.txt"]
+  end # returns an Array of string File paths => ["about.md", "changes.txt", "history.txt"]
 
   erb :index
 end
@@ -48,3 +54,30 @@ get "/:filename" do
     redirect "/"
   end
 end
+
+get "/:filename/edit" do
+  file_path = get_file_path(params[:filename])
+
+  if File.exist?(file_path)
+    @file_name = params[:filename]
+    @content = File.read(file_path)
+    erb :edit
+  else
+    session[:error] = "#{params[:filename]} does not exist."
+    redirect "/"
+  end
+end
+
+post "/:filename/save" do
+  file_path = get_file_path(params[:filename])
+
+  File.write(file_path, params[:content])
+  session[:error] = "#{params[:filename]} does not exist."
+  redirect "/"
+end
+
+# about_text = <<~TEXT
+# # Ruby is....
+
+# A dynamic, open source programming language with a focus on simplicity and productivity. It has an elegant syntax that is natural to read and easy to write.
+# TEXT
