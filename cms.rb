@@ -72,7 +72,7 @@ post "/:filename/save" do
   file_path = get_file_path(params[:filename])
 
   File.write(file_path, params[:content])
-  session[:error] = "#{params[:filename]} does not exist."
+  session[:success] = "#{params[:filename]} has been updated"
   redirect "/"
 end
 
