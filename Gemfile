@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem "sinatra"
 gem "sinatra-contrib"
 gem "erubi"
+gem "redcarpet"
 
 gem "minitest"
 gem "minitest-reporters"
