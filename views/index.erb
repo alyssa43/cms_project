@@ -1,0 +1,7 @@
+<ul>
+  <% @files.each do |file_path| %>
+    <li>
+      <%= File.basename(file_path) %>
+    </li>
+  <% end %>
+</ul>
