@@ -8,11 +8,18 @@ configure do
   set :session_secret, SecureRandom.hex(32)
 end
 
-DATA_PATH = File.join(__dir__, "data") # returns String path to `data` directory => "/Users/alyssaeaster/cms_project/data"
+def data_path 
+  if ENV["RACK_ENV"] == "test"
+    File.expand_path("../test/data", __FILE__) # => "/Users/alyssaeaster/cms_project/test/data"
+  else
+    File.join(__dir__, "data") # => "/Users/alyssaeaster/cms_project/data"
+  end
+end
 
 def get_file_path(file_name)
-  File.join(__dir__, "data", file_name)
+  File.join(data_path, file_name)
 end
+
 
 def render_markdown(text)
   markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
@@ -37,7 +44,8 @@ helpers do
 end
 
 get "/" do
-  @files = Dir.glob(File.join(DATA_PATH, "*")).map do |path|
+  pattern = File.join(data_path, "*")
+  @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end # returns an Array of string File paths => ["about.md", "changes.txt", "history.txt"]
 
@@ -71,8 +79,13 @@ end
 post "/:filename/save" do
   file_path = get_file_path(params[:filename])
 
-  File.write(file_path, params[:content])
-  session[:success] = "#{params[:filename]} has been updated"
+  if File.exist?(file_path)
+    File.write(file_path, params[:content])
+    session[:success] = "#{params[:filename]} has been updated"
+  else
+    session[:error] = "#{params[:filename]} does not exist."
+  end
+  
   redirect "/"
 end
 
