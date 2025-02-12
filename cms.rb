@@ -4,6 +4,11 @@ require "tilt/erubi"
 
 DATA_PATH = File.join(__dir__, "data") # returns String path to `data` directory => "/Users/alyssaeaster/cms_project/data"
 
+configure do
+  enable :sessions
+  set :session_secret, SecureRandom.hex(32)
+end
+
 def get_file_path(file_name)
   File.join(__dir__, "data", file_name)
 end
@@ -18,6 +23,12 @@ end
 
 get "/:file" do
   file_path = get_file_path(params[:file])
-  headers["Content-Type"]= "text/plain"
-  File.read(file_path)
+  
+  if File.exist?(file_path)
+    headers["Content-Type"]= "text/plain"
+    File.read(file_path)
+  else
+    session[:error] = "#{params[:file]} does not exist."
+    redirect "/"
+  end
 end
