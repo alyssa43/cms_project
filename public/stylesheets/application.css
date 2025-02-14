@@ -1,0 +1,12 @@
+body {
+  font-family: "Ubuntu", serif;
+  font-weight: 300;
+  font-style: normal;
+  padding: 1em;
+}
+
+.message {
+  max-width: 960px;
+  padding: 10px;
+  background: #FFFF99; 
+}

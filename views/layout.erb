@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <title>File Based CMS</title>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/application.css">
+  </head>
+  <body>
+    <% if session[:message] %>
+    <div class="message">
+      <p><%= session.delete(:message) %></p>
+    </div>
+    <% end %>
+    <%= yield %>
+  </body>
+</html>
