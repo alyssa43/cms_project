@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="/stylesheets/application.css">
   </head>
   <body>
+
     <% if session[:message] %>
-    <div class="message">
-      <p><%= session.delete(:message) %></p>
-    </div>
+      <div class="message">
+        <p><%= session.delete(:message) %></p>
+      </div>
     <% end %>
+
     <%= yield %>
   </body>
 </html>

@@ -41,16 +41,49 @@ helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
+
+  def signed_in?
+    session[:username]
+  end
 end
 
 # View list of files
 get "/" do
+  # redirect "/users/signin" unless session[:username] # prevents a user from seeing documents after being signed out, but fails one of the LS tests so commenting it out for now
+
   pattern = File.join(data_path, "*")
   @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end # returns an Array of string File paths => ["about.md", "changes.txt", "history.txt"]
 
   erb :index, layout: :layout
+end
+
+# Display the signin form
+get "/users/signin" do
+  erb :signin, layout: :layout
+end
+
+# Process signin form
+post "/users/signin" do
+  username = params[:username]
+  password = params[:password]
+
+  if username == "admin" && password == "secret"
+    session[:username] = "admin"
+    session[:message] = "Welcome!"
+    redirect "/"
+  else
+    session[:message] = "Invalid credentials."
+    status 422
+    erb :signin, layout: :layout
+  end
+end
+
+post "/users/signout" do
+  session.delete(:username)
+  session[:message] = "You have been signed out."
+  redirect "/"
 end
 
 # Create a new file
@@ -121,7 +154,7 @@ post "/:filename/delete" do
   file_path = get_file_path(file_name)
 
   File.delete(file_path) if File.exist?(file_path)
-  
+
   session[:message] = "#{file_name} has been deleted."
   redirect "/"
 end

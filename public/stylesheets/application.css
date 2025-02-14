@@ -14,3 +14,8 @@ body {
 form.inline {
   display: inline;
 }
+
+.user-status {
+  font-style: italic;
+  font-size: 0.9em;
+}
