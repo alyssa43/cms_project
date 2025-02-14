@@ -101,7 +101,7 @@ class CMSTest < Minitest::Test
   end
 
   def test_create_new_document
-    post "/create", file_name: "test.txt"
+    post "/create", filename: "test.txt"
     assert_equal 302, last_response.status
 
     get last_response["Location"]
@@ -112,9 +112,23 @@ class CMSTest < Minitest::Test
   end
 
   def test_create_new_document_without_filename
-    post "/create", file_name: ""
+    post "/create", filename: ""
     assert_equal 422, last_response.status
     assert_includes last_response.body, "A name and valid extension is required"
+  end
+
+  def test_deleting_document
+    create_document("test.txt")
+
+    post "/test.txt/delete"
+
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test.txt has been deleted"
+
+    get "/"
+    refute_includes last_response.body, "test.txt"
   end
 
   def teardown

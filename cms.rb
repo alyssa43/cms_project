@@ -85,7 +85,7 @@ end
 
 # Create a new file
 post "/create" do
-  file_name = params[:file_name].to_s
+  file_name = params[:filename].to_s
 
   if File.extname(file_name).empty?
     session[:message] = "A name and valid extension is required."
@@ -112,5 +112,16 @@ post "/:filename" do
     session[:message] = "#{params[:filename]} does not exist."
   end
   
+  redirect "/"
+end
+
+# Delete an existing file
+post "/:filename/delete" do 
+  file_name = params[:filename]
+  file_path = get_file_path(file_name)
+
+  File.delete(file_path) if File.exist?(file_path)
+  
+  session[:message] = "#{file_name} has been deleted."
   redirect "/"
 end
