@@ -1,5 +1,5 @@
 <p>Edit content of <%= h(@file_name) %>:</p>
-<form action="/<%= h(@file_name) %>/save" method="post">
+<form action="/<%= h(@file_name) %>" method="post">
   <textarea name="content" rows="20" cols="100"><%= h(@content) %></textarea>
   <br>
   <button type="submit">Save Changes</button>

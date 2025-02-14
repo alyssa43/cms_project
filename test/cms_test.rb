@@ -80,7 +80,7 @@ class CMSTest < Minitest::Test
   def test_updating_document
     create_document("changes.txt")
     
-    post "/changes.txt/save", content: "new content"
+    post "/changes.txt", content: "new content"
     assert_equal 302, last_response.status
 
     get last_response["Location"]
@@ -90,6 +90,31 @@ class CMSTest < Minitest::Test
     get "/changes.txt"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "new content"
+  end
+
+  def test_view_new_document_form
+    get "/new"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "<input"
+    assert_includes last_response.body, %q(<button type="submit")
+  end
+
+  def test_create_new_document
+    post "/create", file_name: "test.txt"
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test.txt has been created"
+
+    get "/"
+    assert_includes last_response.body, "test.txt"
+  end
+
+  def test_create_new_document_without_filename
+    post "/create", file_name: ""
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "A name and valid extension is required"
   end
 
   def teardown

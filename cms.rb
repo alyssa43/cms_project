@@ -43,6 +43,7 @@ helpers do
   end
 end
 
+# View list of files
 get "/" do
   pattern = File.join(data_path, "*")
   @files = Dir.glob(pattern).map do |path|
@@ -50,6 +51,11 @@ get "/" do
   end # returns an Array of string File paths => ["about.md", "changes.txt", "history.txt"]
 
   erb :index, layout: :layout
+end
+
+# Create a new file
+get "/new" do
+  erb :new, layout: :layout
 end
 
 get "/:filename" do
@@ -63,6 +69,7 @@ get "/:filename" do
   end
 end
 
+# Edit an existing file
 get "/:filename/edit" do
   file_path = get_file_path(params[:filename])
 
@@ -76,7 +83,26 @@ get "/:filename/edit" do
   end
 end
 
-post "/:filename/save" do
+# Create a new file
+post "/create" do
+  file_name = params[:file_name].to_s
+
+  if File.extname(file_name).empty?
+    session[:message] = "A name and valid extension is required."
+    status 422
+    erb :new, layout: :layout
+  else
+    file_path = File.join(data_path, file_name)
+
+    File.write(file_path, "")
+    session[:message] = "#{file_name} has been created."
+
+    redirect "/"
+  end
+end
+
+# Save contents of edited file
+post "/:filename" do
   file_path = get_file_path(params[:filename])
 
   if File.exist?(file_path)
@@ -88,9 +114,3 @@ post "/:filename/save" do
   
   redirect "/"
 end
-
-# about_text = <<~TEXT
-# # Ruby is....
-
-# A dynamic, open source programming language with a focus on simplicity and productivity. It has an elegant syntax that is natural to read and easy to write.
-# TEXT
