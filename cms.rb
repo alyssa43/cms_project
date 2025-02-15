@@ -1,3 +1,4 @@
+require "yaml"
 require "sinatra"
 require "sinatra/reloader"
 require "tilt/erubi"
@@ -15,6 +16,16 @@ def data_path
     File.join(__dir__, "data") # => "/Users/alyssaeaster/cms_project/data"
   end
 end
+
+def load_user_credentials
+  credentials_path = if ENV["RACK_ENV"] == "test"
+    File.expand_path("../test/users.yml", __FILE__)
+  else
+    File.expand_path("../users.yml", __FILE__)
+  end
+  YAML.load_file(credentials_path)
+end
+
 
 def get_file_path(file_name)
   File.join(data_path, file_name)
@@ -73,11 +84,11 @@ end
 
 # Process signin form
 post "/users/signin" do
+  credentials = load_user_credentials
   username = params[:username]
-  password = params[:password]
 
-  if username == "admin" && password == "secret"
-    session[:username] = "admin"
+  if credentials.key?(username) && credentials[username] == params[:password]
+    session[:username] = username
     session[:message] = "Welcome!"
     redirect "/"
   else
@@ -165,7 +176,7 @@ end
 # Delete an existing file
 post "/:filename/delete" do
   redirect_signed_out_user
-  
+
   file_name = params[:filename]
   file_path = get_file_path(file_name)
 
