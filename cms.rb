@@ -140,7 +140,7 @@ post "/:filename" do
 
   if File.exist?(file_path)
     File.write(file_path, params[:content])
-    session[:message] = "#{params[:filename]} has been updated"
+    session[:message] = "#{params[:filename]} has been updated."
   else
     session[:message] = "#{params[:filename]} does not exist."
   end
