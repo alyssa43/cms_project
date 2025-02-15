@@ -37,6 +37,13 @@ def load_file_content(file_path)
   end
 end
 
+def redirect_signed_out_user
+  unless signed_in?
+    session[:message] = "You must be signed in to do that."
+    redirect "/"
+  end
+end
+
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
@@ -88,6 +95,8 @@ end
 
 # Create a new file
 get "/new" do
+  redirect_signed_out_user
+
   erb :new, layout: :layout
 end
 
@@ -104,6 +113,8 @@ end
 
 # Edit an existing file
 get "/:filename/edit" do
+  redirect_signed_out_user
+
   file_path = get_file_path(params[:filename])
 
   if File.exist?(file_path)
@@ -118,6 +129,8 @@ end
 
 # Create a new file
 post "/create" do
+  redirect_signed_out_user
+
   file_name = params[:filename].to_s
 
   if File.extname(file_name).empty?
@@ -136,6 +149,8 @@ end
 
 # Save contents of edited file
 post "/:filename" do
+  redirect_signed_out_user
+
   file_path = get_file_path(params[:filename])
 
   if File.exist?(file_path)
@@ -144,12 +159,13 @@ post "/:filename" do
   else
     session[:message] = "#{params[:filename]} does not exist."
   end
-  
   redirect "/"
 end
 
 # Delete an existing file
-post "/:filename/delete" do 
+post "/:filename/delete" do
+  redirect_signed_out_user
+  
   file_name = params[:filename]
   file_path = get_file_path(file_name)
 
