@@ -6,6 +6,7 @@ gem "sinatra"
 gem "sinatra-contrib"
 gem "erubi"
 gem "redcarpet"
+gem "bcrypt"
 
 gem "minitest"
 gem "minitest-reporters"
